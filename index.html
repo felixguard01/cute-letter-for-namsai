@@ -65,25 +65,28 @@
     }
 
     #winMessage {
-        position: absolute;
-        top: 40%;
+        position: fixed;              /* แก้จาก absolute */
+        top: 50%;                     /* จาก 40% → 50% */
         left: 50%;
         transform: translate(-50%, -50%);
         font-size: 2rem;
         color: #fff;
-        background: rgba(255, 105, 129, 0.9);
+        background: rgba(255, 105, 129, 0.95);
         border-radius: 20px;
-        padding: 30px 50px;
+        padding: 30px 40px;
         text-align: center;
-        display: none;
+        line-height: 1.4;
+        max-width: 90vw;              /* กันล้นจอมือถือ */
         box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        display: none;
+        z-index: 9999;
     }
 </style>
 </head>
 <body>
 <h1>แก้ Puzzle แล้วจะรู้ว่าบอกอะไรเธอ คำตอบอยู่ในนี้ มี 4 คำ</h1>
 <div class="grid" id="grid"></div>
-<div id="winMessage">💖 จะอยู่ข้างๆเราตลอดรึป่าวครับ 💖</div>
+<div id="winMessage">จะอยู่ข้างๆเราตลอดรึป่าวครับ</div>
 
 <script>
 const words = ["I", "LOVE", "NAMSAI", "FOREVER"];
