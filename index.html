@@ -83,10 +83,10 @@
 <body>
 <h1>แก้ Puzzle แล้วจะรู้ว่าบอกอะไรเธอ คำตอบอยู่ในนี้ มี 4 คำ</h1>
 <div class="grid" id="grid"></div>
-<div id="winMessage">💖 จะอยู่ข้างๆเราตลอดรึป่าวครับ</div>
+<div id="winMessage">💖 จะอยู่ข้างๆเราตลอดรึป่าวครับ 💖</div>
 
 <script>
-const words = ["I", "LOVE", "NAMSAI" , "FOREVER"];
+const words = ["I", "LOVE", "NAMSAI", "FOREVER"];
 const gridSize = 7;
 
 // สุ่มตัวอักษร
@@ -104,53 +104,49 @@ for(let r=0;r<gridSize;r++){
         div.classList.add('cell');
         div.dataset.row = r;
         div.dataset.col = c;
-        div.dataset.wordId = "";
+        div.dataset.word = "";
         div.innerText = randomChar();
         grid.appendChild(div);
         cells.push(div);
     }
 }
 
-// วางคำแบบไม่ซ้ำกัน
+// =========================
+// เพิ่มฟังก์ชันนี้ (ของเดิมขาด)
+// เหตุผล: ถูกเรียกใช้งานแต่ไม่เคยประกาศ
+// =========================
 function placeWord(word, wordId){
     let placed = false;
-    while(!placed){
-        const dir = Math.random()<0.5 ? "h" : "v";
-        const start = Math.floor(Math.random()*(gridSize - (dir==="h"? word.length : 0)));
-        const fixed = Math.floor(Math.random()*(gridSize - (dir==="v"? word.length : 0)));
-        let conflict = false;
 
-        // ตรวจ cell รอบ ๆ + คำเอง
+    while(!placed){
+        const row = Math.floor(Math.random() * gridSize);
+        const col = Math.floor(Math.random() * (gridSize - word.length));
+
+        let canPlace = true;
         for(let i=0;i<word.length;i++){
-            let r = dir==="h" ? fixed : fixed+i;
-            let c = dir==="h" ? start+i : fixed;
-            
-            for(let dr=-1; dr<=1; dr++){
-                for(let dc=-1; dc<=1; dc++){
-                    const nr = r+dr;
-                    const nc = c+dc;
-                    if(nr>=0 && nr<gridSize && nc>=0 && nc<gridSize){
-                        const idx = nr*gridSize + nc;
-                        if(cells[idx].dataset.wordId !== ""){
-                            conflict = true;
-                        }
-                    }
-                }
+            const cell = cells.find(c =>
+                Number(c.dataset.row) === row &&
+                Number(c.dataset.col) === col + i
+            );
+            if(cell.dataset.word){
+                canPlace = false;
+                break;
             }
         }
 
-        if(!conflict){
+        if(canPlace){
             for(let i=0;i<word.length;i++){
-                let idx = dir==="h" ? fixed*gridSize + start + i : (fixed+i)*gridSize + fixed;
-                cells[idx].dataset.word = word;
-                cells[idx].dataset.wordId = wordId;
-                cells[idx].innerText = word[i];
+                const cell = cells.find(c =>
+                    Number(c.dataset.row) === row &&
+                    Number(c.dataset.col) === col + i
+                );
+                cell.innerText = word[i];
+                cell.dataset.word = wordId;
             }
             placed = true;
         }
     }
 }
-
 
 // วางคำทุกคำ
 words.forEach((w,i)=>placeWord(w, i));
@@ -160,7 +156,6 @@ function checkWin(){
     const wordCells = cells.filter(c => c.dataset.word);
     if(wordCells.every(c => c.classList.contains('found'))){
         document.getElementById('winMessage').style.display = 'block';
-        // สร้างหัวใจหลายตัว
         for(let i=0;i<20;i++){
             createHeart(Math.random()*window.innerWidth, Math.random()*window.innerHeight);
         }
